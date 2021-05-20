@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+        <meta charset = "utf-8">
+        <title> Bugs List </title>
+    <head>
+    <body>
+        <p> Welcome to Tutorial module! The connection is {{ result }}</p>
+        <a href="/tutorial/transaction_example">Transaction Example</a><br>
+        <a href="/tutorial/reentrancy">Reentrancy Bugs</a><br>
+        <a href="/tutorial/overflow">Overflow Bugs</a>
+    </body>
+</html>
