@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+        <meta charset = "utf-8">
+        <title> Bugs List </title>
+    <head>
+    <body>
+        <p> Welcome to Reentrancy Bugs Tutorial!</p>
+        <a href="/tutorial/reentrancy/Game_deployment">ReentrancyGame deployment</a><br>
+        {% if result1 %}
+            <p> Contract Address: {{ result1 }}</p>
+        {% else %}
+            <p> Contract Address: </p>
+        {% endif %}
+        <a href="/tutorial/reentrancy/Attack_deployment">ReentrancyAttack deployment</a><br>
+        <p> Contract Address: {{ result2 }}</p>
+        <a href="/tutorial/reentrancy/attack">Start to attack!</a>
+    </body>
+</html>
