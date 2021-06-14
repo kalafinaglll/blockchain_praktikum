@@ -2,14 +2,37 @@
 
 <html lang="en">
     <head>
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+        <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"> -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta charset = "utf-8">
+
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
+
+        <link href="{{ url_for('static', filename='static/css/coming-sssoon.css') }}" rel="stylesheet" /> 
+
         <title> Bugs List </title>
-    <head>
+
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Grand+Hotel' rel='stylesheet' type='text/css'>
+    </head>
     <body>
-        <p> Welcome to Tutorial module! The connection is {{ result }}</p>
-        <a href="/tutorial/transaction_example">Transaction Example</a><br>
-        <a href="/tutorial/reentrancy">Reentrancy Bugs</a><br>
-        <a href="/tutorial/overflow">Overflow Bugs</a>
+        <div class="main" style="background-image: url('/static/images/geometric-leaves.png')">
+            <div class="columns">
+                <div class="medium-2 columns" style="background-color:#f1f1f1;">
+                    <ul class="side-nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/tutorial/transaction_example">Transaction Example</a></li>
+                        <li><a href="/tutorial/reentrancy_intro/?page=1">Reentrancy Bugs</a></li>
+                        <li><a href="/tutorial/returncheck">ReturnCheck Bugs</a></li>
+                    </ul>
+                </div>
+                <div class="medium-8 row">
+                    <h2> Welcome to Tutorial module! </h2><br><br>
+                    <h4> The connection to Ganache is {{ result }} </h4>
+                    <h4> Please choose one of bugs that you are curious from bugs list at left sidebar to continue... </h4>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"> -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta charset = "utf-8">
+
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
+
+        <link href="{{ url_for('static', filename='static/css/coming-sssoon.css') }}" rel="stylesheet" /> 
+
+        <title> Bugs Introduction </title>
+
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Grand+Hotel' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="main" style="background-image: url('/static/images/geometric-leaves.png')">
+            <div class="columns">
+                <div class="medium-4 row">
+                    <h3> Welcome to Reentrancy Bug Tutorial!</h3><br><br>
+                </div>
+                <div class="medium-2 right" style="background-color:#f1f1f1;">
+                    <ul class="side-nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/tutorial">Return to Bugs List</a></li>
+                        {% if page == '1' %}
+                            <li><a href="/tutorial/reentrancy_intro/?page=2">Next Step</a></li>
+                        {% elif page == '2'%}
+                            <li><a href="/tutorial/reentrancy_intro/?page=3">Next Step</a></li>
+                        {% else %}
+                            <li><a href="/tutorial/reentrancy">Next Step</a></li>
+                        {% endif %}
+                        <!-- <li><a href="/tutorial/returncheck">ReturnCheck Bugs</a></li> -->
+                    </ul>
+                </div>
+                <div class="medium-5 columns">
+                    {% if page == '1' %}
+                        <img src="/static/images/ReentrancyGame.png" alt="Nothing" />
+                    {% elif page == '2' %}
+                        <img src="/static/images/ReentrancyAttack.png" alt="Nothing" />
+                    {% else %}
+                        <img src="/static/images/ReentrancyFlow.png" alt="Nothing" />
+                    {% endif %}
+                </div>
+                <div class="medium-5 columns">
+                    {% if page == '1' %}
+                        <h4>Reentrancy bug is a vulnerability that attacker can exlpoit to call functions in victim contract in an unlimited loop until limited gas run out.</h4>
+                        <h4>Attacks with exploiting reentrancy bug will lead to outflow of ether in victim contract account. The attacker can steal more ether than they actually have from victim contract account with only an attack contract.</h4>
+                        <h4>You may notice the code in red box, all problem start from it! Go 'Next Step' to get more information.</h4>
+                    {% elif page == '2' %}
+                        <h4>The core reason is the vulnerability of 'call()' method. 'call()' method is normally used to send ether to target account. Once the target account is a contract address, 'fallback()' function of this contract will be triggered. Here comes a problem, that attacker can code the 'fallback()' function by himself. For example, calling 'withdraw()' function once more. Because the execution of 'fallback()' is ahead of the code after 'call()' method, the execution of 'withdraw()' function will be in a loop.</h4>
+                        <h4>As you can find in these two red boxes. The first code line is the start of attack. The second code line is the start of withdraw loop.</h4>
+                    {% else %}
+                        <h4>Counter measures: <br>1) Avoid using 'call()' to send ether, use 'transfer()' instead. The gas sent by 'transfer()' is not enough for target contract to call anthor 'withdraw'.<br> 2) Recommend finishing all internal work first, and only then calling teh external function. This rule will allow you to avoid vulnerabilities due to reentrancy.<br> 3) Mark untrusted functions to make reentry impossible.<br> 4) Use mutex to "lock" some state so it can only be changed by the owner of the lock.</h4>
+                        <h4>Then let's go 'Next Step' to a real scenario of reentrancy attack to experience it!</h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

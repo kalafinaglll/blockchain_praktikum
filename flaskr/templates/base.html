@@ -1,16 +1,46 @@
-{{ url_for('static', filename='style.css') }}
-
 <!DOCTYPE html>
 
 <html lang="en">
     <head>
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
-        <meta charset = "utf-8">
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
+
         <title> Bugs Hunter </title>
-    <head>
+
+        <!-- <link href="static/css/bootstrap.css" rel="stylesheet" /> -->
+        <link href="{{ url_for('static', filename='static/css/coming-sssoon.css') }}" rel="stylesheet" />    
+        
+        <!--    Fonts     -->
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Grand+Hotel' rel='stylesheet' type='text/css'>
+    </head>
     <body>
-        <p> Welcome to Bugs Hunter platform!</p>
-        <a href="/tutorial">Bugs Tutorial</a><br>
-        <a href="/challenge">Bugs Challenge</a>
+        <div class="main" style="background-image: url('/static/images/geometric-leaves.png')">
+            <!-- <div class="cover black" data-color="blue"></div> -->
+            <!-- <div class="container">
+                <div class="content">
+                    <h4 class="motto"> Welcome to Bugs Hunter platform!</h4>
+                    <a href="/tutorial">Bugs Tutorial</a><br><br>
+                    <a href="/challenge">Bugs Challenge</a>
+                </div>
+            </div> -->
+            <div class="columns">
+                <div class="medium-2 columns" style="background-color:#f1f1f1;">
+                    <ul class="side-nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/tutorial"> Bugs Tutorial </a></li>
+                        <li><a href="/challenge"> Bugs Challenge </a></li>
+                    </ul>
+                </div>
+                <div class="medium-8 row">
+                    <h2> Welcome to Bugs Hunter platform!</h2><br><br>
+                    <h4> You can choose one of functions that our platform provide from left sidebar to continue... </h4>
+                </div>
+            </div>
+        </div>
+        
     </body>
 </html>

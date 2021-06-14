@@ -2,7 +2,6 @@
 
 <html lang="en">
     <head>
-        <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"> -->
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta charset = "utf-8">
 
@@ -11,7 +10,7 @@
 
         <link href="/static/css/coming-sssoon.css" rel="stylesheet" />
 
-        <title> Reentrancy Case </title>
+        <title> ReturnCheck Case </title>
 
         <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Grand+Hotel' rel='stylesheet' type='text/css'>
@@ -20,7 +19,7 @@
         <div class="main" style="background-image: url('/static/images/geometric-leaves.png')">
             <div class="columns">
                 <div class="medium-4 row">
-                    <h3> Welcome to Reentrancy Bug Tutorial!</h3><br><br>
+                    <h3> Welcome to ReturnCheck Bug Tutorial! </h3><br><br>
                 </div>
 
                 <div class="medium-2 right" style="background-color:#f1f1f1;">
@@ -31,15 +30,12 @@
                 </div>
 
                 <div class="medium-3 columns" style="background-color:#f1f1f1;">
-                    <a href="/tutorial/reentrancy/Game_deployment">ReentrancyGame deployment</a><br>
-                    {% if result1 %}
-                        <p> Contract Address: {{ result1 }}</p>
-                    {% else %}
-                        <p> Contract Address: </p>
-                    {% endif %}
-                    <p> Balance of Game: </p><input type="text" value="{{ Balance_G }}">
-                    <form method="post" action="/tutorial/reentrancy/checkBalance">
-                        <button type="submit" name="submit_button" value="D">deposit</button><br><br>
+                    <a href="/tutorial/returncheck/Game_deployment">UncheckedGame deployment</a><br>
+                    <p> Contract Address: {{ result1 }}</p>
+                    <p> Balance of UncheckedGame: </p><input type="text" value="{{ Balance_G1 }}">
+                    <p> Balance of Account "RevertContract": </p><input type="text" value="{{ Balance_RC }}">
+                    <form method="post" action="/tutorial/returncheck/ownedEth">
+                        <button type="submit" name="submit_button" value="RC">Balance of Account</button>
                     </form>
                 </div>
                 <div class="medium-4 row" >
@@ -48,17 +44,20 @@
                 <br>
 
                 <div class="medium-3 columns" style="background-color:#f1f1f1;">
-                    <a href="/tutorial/reentrancy/Attack_deployment">ReentrancyAttack deployment</a><br>
-                    <p> Contract Address: {{ result2 }}</p>
-                    <p> Balance of Attack: </p><input type="text" value="{{ Balance_A }}"><br>
-                    <form method="post" action="/tutorial/reentrancy/checkBalance">
-                        <button type="submit" name="submit_button" value="GA">checkBalance</button><br><br>
+                    <a href="/tutorial/returncheck/Revert_deployment">RevertContract deployment</a><br>
+                    <p> Contract Address: {{ result2 }} </p>
+                    <p> Balance of RevertContract: </p><input type="text" value="{{ Balance_R1 }}">
+
+                    <form method="post" action="/tutorial/returncheck/ownedEth">
+                        <button type="submit" name="submit_button" value="D"> deposit </button><br>
+                        <button type="submit" name="submit_button" value="W"> withdraw </button><br>
+                        <button type="submit" name="submit_button" value="UR"> checkBalance </button>
                     </form>
-                    <a href="/tutorial/reentrancy/attack">Start to attack!</a><br><br>
                 </div>
                 <div class="medium-4 row" >
                     <h4>{{ text2 }}</h4>
                 </div>
+                <br>
             </div>
         </div>
     </body>
