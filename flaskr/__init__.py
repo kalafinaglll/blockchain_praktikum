@@ -1,8 +1,18 @@
 import os
 import json
+import time
 
 from flask import Flask, render_template, request, url_for
 from web3 import Web3
+
+from hexbytes import HexBytes
+from solcx import compile_files
+
+class HexJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, HexBytes):
+            return obj.hex()
+        return super().default(obj)
 
 def create_app(test_config=None):
     app = Flask(__name__, static_folder='.', static_url_path='', instance_relative_config=True)
@@ -171,7 +181,13 @@ def create_app(test_config=None):
     # ---------------------reentrancy end------------------------------------------
 
 
-    #--------------------------revertcheck implementation------------------------------
+    #--------------------------returncheck implementation------------------------------
+    @app.route('/tutorial/returncheck_intro/')
+    def returncheck_intro():
+        page = request.args.get('page', "No page")
+        return render_template('returncheck_intro.html', page=page)
+
+
     @app.route('/tutorial/returncheck')
     def returncheck():
         text1 = "'UncheckedGame' is the contrat with retrun value check vulnerability. Click 'UncheckedGame deployment' to deploy this contract on network"
@@ -281,6 +297,387 @@ def create_app(test_config=None):
     @app.route('/challenge')
     def challenge():
         return render_template('challenge.html')
+
+
+
+    @app.route('/challenge/start')
+    def challenge_start():
+        # start challenge
+        # htlc
+        web3.eth.defaultAccount = web3.eth.accounts[0]
+        #print(user_account)
+
+
+        bytecode_HTLC = '608060405234801561001057600080fd5b5061136b806100206000396000f3fe6080604052600436106100705760003560e01c80637249fbb61161004e5780637249fbb614610191578063cfb51928146101e4578063e16c7d98146102c0578063f380a9fc146103a057610070565b8063335ef5bd146100755780635c2d49b3146100e15780636361514914610134575b600080fd5b6100cb6004803603606081101561008b57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803590602001909291905050506103ef565b6040518082815260200191505060405180910390f35b3480156100ed57600080fd5b5061011a6004803603602081101561010457600080fd5b810190808035906020019092919050505061087e565b604051808215151515815260200191505060405180910390f35b34801561014057600080fd5b506101776004803603604081101561015757600080fd5b8101908080359060200190929190803590602001909291905050506108ec565b604051808215151515815260200191505060405180910390f35b34801561019d57600080fd5b506101ca600480360360208110156101b457600080fd5b8101908080359060200190929190505050610d79565b604051808215151515815260200191505060405180910390f35b3480156101f057600080fd5b506102aa6004803603602081101561020757600080fd5b810190808035906020019064010000000081111561022457600080fd5b82018360208201111561023657600080fd5b8035906020019184600183028401116401000000008311171561025857600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f82011690508083019250505050505050919291929050505061114f565b6040518082815260200191505060405180910390f35b3480156102cc57600080fd5b506102f9600480360360208110156102e357600080fd5b810190808035906020019092919050505061117a565b604051808973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018873ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200187815260200186815260200185815260200184151515158152602001831515151581526020018281526020019850505050505050505060405180910390f35b3480156103ac57600080fd5b506103d9600480360360208110156103c357600080fd5b810190808035906020019092919050505061128f565b6040518082815260200191505060405180910390f35b6000803411610466576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260158152602001807f6d73672e76616c7565206d757374206265203e2030000000000000000000000081525060200191505060405180910390fd5b814281116104bf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260238152602001806112c06023913960400191505060405180910390fd5b60023386348787604051602001808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1660601b81526014018573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1660601b8152601401848152602001838152602001828152602001955050505050506040516020818303038152906040526040518082805190602001908083835b60208310610592578051825260208201915060208101905060208303925061056f565b6001836020036101000a038019825116818451168082178552505050505050905001915050602060405180830381855afa1580156105d4573d6000803e3d6000fd5b5050506040513d60208110156105e957600080fd5b81019080805190602001909291905050509150600082905061060a8361087e565b1561067d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260178152602001807f436f6e747261637420616c72656164792065786973747300000000000000000081525060200191505060405180910390fd5b6040518061010001604052803373ffffffffffffffffffffffffffffffffffffffff1681526020018773ffffffffffffffffffffffffffffffffffffffff1681526020013481526020018681526020018581526020016000151581526020016000151581526020016000801b81525060008085815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020155606082015181600301556080820151816004015560a08201518160050160006101000a81548160ff02191690831515021790555060c08201518160050160016101000a81548160ff02191690831515021790555060e082015181600601559050508573ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16847fc2d52c5a7eb98035421ede814491afb7d24632fdf15f6cfaf45d2ac864a8081a348989876040518085815260200184815260200183815260200182815260200194505050505060405180910390a450509392505050565b60008073ffffffffffffffffffffffffffffffffffffffff1660008084815260200190815260200160002060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614159050919050565b6000826108f88161087e565b61096a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260198152602001807f636f6e7472616374496420646f6573206e6f742065786973740000000000000081525060200191505060405180910390fd5b8383600281604051602001808281526020019150506040516020818303038152906040526040518082805190602001908083835b602083106109c1578051825260208201915060208101905060208303925061099e565b6001836020036101000a038019825116818451168082178552505050505050905001915050602060405180830381855afa158015610a03573d6000803e3d6000fd5b5050506040513d6020811015610a1857600080fd5b81019080805190602001909291905050506000808481526020019081526020016000206003015414610ab2576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601c8152602001807f686173686c6f636b206861736820646f6573206e6f74206d617463680000000081525060200191505060405180910390fd5b853373ffffffffffffffffffffffffffffffffffffffff1660008083815260200190815260200160002060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614610b89576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601a8152602001807f776974686472617761626c653a206e6f7420726563656976657200000000000081525060200191505060405180910390fd5b6000151560008083815260200190815260200160002060050160009054906101000a900460ff16151514610c25576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601f8152602001807f776974686472617761626c653a20616c72656164792077697468647261776e0081525060200191505060405180910390fd5b426000808381526020019081526020016000206004015411610c92576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260318152602001806113066031913960400191505060405180910390fd5b6000806000898152602001908152602001600020905086816006018190555060018160050160006101000a81548160ff0219169083151502179055508060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc82600201549081150290604051600060405180830381858888f19350505050158015610d3c573d6000803e3d6000fd5b50877fd6fd4c8e45bf0c70693141c7ce46451b6a6a28ac8386fca2ba914044e0e2391660405160405180910390a260019550505050505092915050565b600081610d858161087e565b610df7576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260198152602001807f636f6e7472616374496420646f6573206e6f742065786973740000000000000081525060200191505060405180910390fd5b823373ffffffffffffffffffffffffffffffffffffffff1660008083815260200190815260200160002060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614610ece576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260168152602001807f726566756e6461626c653a206e6f742073656e6465720000000000000000000081525060200191505060405180910390fd5b6000151560008083815260200190815260200160002060050160019054906101000a900460ff16151514610f6a576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601c8152602001807f726566756e6461626c653a20616c726561647920726566756e6465640000000081525060200191505060405180910390fd5b6000151560008083815260200190815260200160002060050160009054906101000a900460ff16151514611006576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601d8152602001807f726566756e6461626c653a20616c72656164792077697468647261776e00000081525060200191505060405180910390fd5b42600080838152602001908152602001600020600401541115611074576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260238152602001806112e36023913960400191505060405180910390fd5b6000806000868152602001908152602001600020905060018160050160016101000a81548160ff0219169083151502179055508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc82600201549081150290604051600060405180830381858888f19350505050158015611115573d6000803e3d6000fd5b50847f989b3a845197c9aec15f8982bbb30b5da714050e662a7a287bb1a94c81e2e70e60405160405180910390a260019350505050919050565b6000606082905060008151141561116c576000801b915050611175565b60208301519150505b919050565b600080600080600080600080600015156111938a61087e565b151514156111d4576000806000806000806000808797508696508595508460001b94508393508060001b905097509750975097509750975097509750611284565b60008060008b815260200190815260200160002090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168160010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168260020154836003015484600401548560050160009054906101000a900460ff168660050160019054906101000a900460ff16876006015487975086965098509850985098509850985098509850505b919395975091939597565b6000816040516020018082815260200191505060405160208183030381529060405280519060200120905091905056fe74696d656c6f636b2074696d65206d75737420626520696e2074686520667574757265726566756e6461626c653a2074696d656c6f636b206e6f742079657420706173736564776974686472617761626c653a2074696d656c6f636b2074696d65206d75737420626520696e2074686520667574757265a265627a7a723158207be8b9ef943cfb3abf183497d7ec3e2dea28cd03139e659a32890c69dc9a884164736f6c63430005110032'
+        abi = json.loads('[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"contractId","type":"bytes32"},{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"hashlock","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"timelock","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"contractId_","type":"bytes32"}],"name":"LogHTLCNew","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"contractId","type":"bytes32"}],"name":"LogHTLCRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"contractId","type":"bytes32"}],"name":"LogHTLCWithdraw","type":"event"},{"constant":false,"inputs":[{"internalType":"address payable","name":"_receiver","type":"address"},{"internalType":"bytes32","name":"_hashlock","type":"bytes32"},{"internalType":"uint256","name":"_timelock","type":"uint256"}],"name":"newContract","outputs":[{"internalType":"bytes32","name":"contractId","type":"bytes32"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"_contractId","type":"bytes32"}],"name":"refund","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"_contractId","type":"bytes32"},{"internalType":"bytes32","name":"_preimage","type":"bytes32"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"_contractId","type":"bytes32"}],"name":"getContract","outputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"receiver","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes32","name":"hashlock","type":"bytes32"},{"internalType":"uint256","name":"timelock","type":"uint256"},{"internalType":"bool","name":"withdrawn","type":"bool"},{"internalType":"bool","name":"refunded","type":"bool"},{"internalType":"bytes32","name":"preimage","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"_contractId","type":"bytes32"}],"name":"haveContract","outputs":[{"internalType":"bool","name":"exists","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"string","name":"source","type":"string"}],"name":"stringToBytes32","outputs":[{"internalType":"bytes32","name":"result","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"plaintext","type":"bytes32"}],"name":"testSHA256","outputs":[{"internalType":"bytes32","name":"encrypto","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}]')
+        htlc = web3.eth.contract(abi=abi, bytecode=bytecode_HTLC)
+
+
+
+        if os.path.exists('flaskr/session'):
+            with open("flaskr/session","r") as session:
+                    lines = session.readlines()
+
+                    contract = web3.eth.contract(
+                        address = lines[0].strip(),
+                        abi = abi
+                    )
+                    addr_new_htlc = lines[1].strip()
+                    status = get_contract(contract,addr_new_htlc)
+
+                    return render_template('challenge.html', result1=contract.address, result2= addr_new_htlc, result3 = status)
+
+
+        tx_hash = htlc.constructor().transact()
+        tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
+        contract = web3.eth.contract(
+            address = tx_receipt.contractAddress,
+            abi = abi
+        )
+
+        global contract_HTLC
+        contract_HTLC = contract
+        #contract_A = None
+        #print(contract.abi)
+        with open("flaskr/session","w") as session:
+            session.write(str(contract.address)+'\n')
+
+        print(os.path.abspath("."))
+
+        addr_new_htlc = initialize_contract(contract)
+        addr_new_htlc = "0x"+addr_new_htlc
+
+        with open("flaskr/session","a") as session:
+            session.write(str(addr_new_htlc)+'\n')
+        status = get_contract(contract,addr_new_htlc)
+
+
+
+        with open("flaskr/challenges/ch1","r") as king:
+            code_abi = king.readlines()
+
+        ch1 = initialize_contract_ch(code_abi[0].strip(),code_abi[1].strip())
+        with open("flaskr/session","a") as session:
+            session.write(str(ch1.address)+'\n')
+        global address_c1
+        address_c1 = ch1.address
+
+        with open("flaskr/session","r") as test:
+            aaa = test.readlines()
+            for x in aaa:
+                print(x)
+
+
+        with open("flaskr/challenges/ch2","r") as overflow:
+            code_abi1 = overflow.readlines()
+        ch2 = initialize_contract_ch(code_abi1[0].strip(),code_abi1[1].strip())
+        with open("flaskr/session","a") as session:
+            session.write(str(ch2.address)+'\n')
+
+
+        with open("flaskr/challenges/ch3","r") as private_data:
+            code_abi2 = private_data.readlines()
+        ch3 = initialize_contract_ch(code_abi2[0].strip(),code_abi2[1].strip())
+        with open("flaskr/session","a") as session:
+            session.write(str(ch3.address)+'\n')
+
+
+        with open("flaskr/challenges/ch4","r") as conseguess:
+            code_abi3 = conseguess.readlines()
+        ch4 = initialize_contract_ch(code_abi3[0].strip(),code_abi3[1].strip())
+        with open("flaskr/session","a") as session:
+            session.write(str(ch4.address)+'\n')
+
+
+        with open("flaskr/challenges/ch5","r") as reentrancy:
+            code_abi4 = reentrancy.readlines()
+        ch5 = initialize_contract_ch(code_abi4[0].strip(),code_abi4[1].strip())
+        with open("flaskr/session","a") as session:
+            session.write(str(ch5.address)+'\n')
+        balance_ch5 =ch5.functions.balances(ch5.address).call()
+        if balance_ch5 == 0:
+                tx_hash = ch5.functions.deposit().transact({
+                    'to': ch5.address,
+                    'from': web3.eth.accounts[0],
+                    'value': 100
+                })
+
+
+
+
+        return render_template('challenge.html', result1=contract_HTLC.address, result2= addr_new_htlc, result3 = status)
+
+    def initialize_contract(contract):
+        user_account1 = "0xF10CC9735dc4816efA529921781Ea6a3Cd82D434"
+        web3.eth.defaultAccount = web3.eth.accounts[0]
+        key  = "0x66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925"#"0x0000000000000000000000000000000000000000000000000000000000000000"
+        #"S78DF6G53K4G689S3G":"0x5337384446364735334b34473638395333470000000000000000000000000000":"0xf075faafdc8a1211d3813752a2b8b634151ef44859e7ef5f0358eda775b8553d"
+
+        t = int(int(time.time())+60*60*2.5)
+        newContract = contract.functions.newContract(user_account1,key,t).transact({"value":100})
+        newContract_receipt = web3.eth.waitForTransactionReceipt(newContract)
+
+        test = web3.eth.getTransactionReceipt(newContract)
+
+        logs = contract.events.LogHTLCNew().processReceipt(test)
+        tx_dict = dict(logs[0])
+        bytesid = dict(tx_dict)['args']['contractId']
+        newcontract_addr = bytesid.hex()
+     
+        return newcontract_addr
+
+    def get_contract(contract,addr_new_htlc):
+        status = contract.functions.getContract(addr_new_htlc).call()
+        print(status)
+        if status[5] == True:
+            return "congratulations!successfully finished challenge!"
+        elif time.time() > status[4]:
+            contract.functions.refund(addr_new_htlc).call()
+            return "you have lost the game, time over!"
+        else:
+            tl = time.localtime(status[4])
+            format_time = time.strftime("%Y-%m-%d %H:%M:%S", tl) 
+            resttime = int(status[4] - time.time()) / 60
+            return "please try harder! you have time until "+str(format_time)+" , you still have "+str(int(resttime))+" minutes to finish it"
+
+    def initialize_contract_ch(bytecode_chg,abi_chg):
+        bytecode_challenge=bytecode_chg
+        abi = json.loads(abi_chg)
+        challenge1 = web3.eth.contract(abi=abi, bytecode=bytecode_challenge)
+
+        tx_hash = challenge1.constructor().transact()
+        tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
+        contract = web3.eth.contract(
+            address = tx_receipt.contractAddress,
+            abi = abi
+        )
+
+        print("this is contrac address"+str(contract.address))
+        return contract
+
+
+
+
+    # @app.route('/your_challenges')
+    # def show_():
+    #     with open("flaskr/session","r") as session:
+    #         lines = session.readlines()
+
+    #     with open("flaskr/challenges/ch1") as king:
+    #         bycode_abi = king.readlines()
+
+    #     abi = bycode_abi[1]    
+
+    #     contract = web3.eth.contract(
+    #         address = lines[2].strip(),
+    #         abi = abi
+    #     )
+
+    #     status = contract.functions.iskings().call()
+
+    #     with open("flaskr/sol/ch1","r") as ch1:
+    #         source = ch1.readlines()
+
+
+
+
+    #     return render_template('challenge1.html', result2= lines[2], result3 = status, source_code=source)
+
+    @app.route('/your_challenges/store', methods=['POST'])
+    def storetext():
+        web3.eth.defaultAccount = web3.eth.accounts[0]
+        if request.method == "POST":
+            # print(request.form['text'])
+            if request.form['submit'] == 'submit1':
+                filename = "flaskr/challenge1.sol"
+                contractname = "flaskr/challenge1.sol:King"
+            elif request.form['submit'] == 'submit5':
+                filename = "flaskr/challenge5.sol"
+                contractname = "flaskr/challenge5.sol:Reentrancy"
+
+            with open(filename, "w") as sol:
+                sol.write(str(request.form['text']) + "\n")
+
+            contracts = compile_files(
+                [filename],
+                solc_version='0.8.0'
+                )
+            app_contract = contracts.pop(contractname)
+
+            # abi = json.loads('[{"inputs":[{"internalType":"address","name":"_levelInstance","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"give","outputs":[],"stateMutability":"payable","type":"function"}]')
+            # bytecode = "608060405234801561001057600080fd5b5060405161023d38038061023d8339818101604052810190610032919061008d565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610108565b600081519050610087816100f1565b92915050565b6000602082840312156100a3576100a26100ec565b5b60006100b184828501610078565b91505092915050565b60006100c5826100cc565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600080fd5b6100fa816100ba565b811461010557600080fd5b50565b610126806101176000396000f3fe608060405260043610601c5760003560e01c80639e96a23a146021575b600080fd5b60276029565b005b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1634604051606b9060cf565b60006040518083038185875af1925050503d806000811460a6576040519150601f19603f3d011682016040523d82523d6000602084013e60ab565b606091505b505050565b600060bb60008360e2565b915060c48260ed565b600082019050919050565b600060d88260b0565b9150819050919050565b600081905092915050565b5056fea2646970667358221220b58c9d2b602f5b9acc93616feb5a256584af5f366301e6026be495a72e994fd564736f6c63430008060033"
+
+            King = web3.eth.contract(abi=app_contract['abi'], bytecode=app_contract['bin'])
+            # King = web3.eth.contract(abi=abi, bytecode=bytecode)
+            tx_hash = King.constructor(address_c1).transact({
+                'value': 5
+                })
+            tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
+            contract = web3.eth.contract(
+                address=tx_receipt.contractAddress,
+                abi=abi
+                )
+            contract.functions.give().call()
+            return render_template('base.html')
+        return "fail"
+
+    @app.route('/your_challenges/1', methods=['GET', 'POST'])
+    def ch1():
+        with open("flaskr/session","r") as session:
+            lines = session.readlines()
+
+        with open("flaskr/challenges/ch1") as king:
+            bycode_abi = king.readlines()
+
+        abi = bycode_abi[1]    
+
+        contract = web3.eth.contract(
+            address = lines[2].strip(),
+            abi = abi
+        )
+
+        status = contract.functions.iskings().call()
+        if status == False:
+            status = "not solved"
+            token_ = "Try harder"
+        else:
+            status = "solved"
+            token_ = "0x00001"
+        with open("flaskr/sol/ch1","r") as ch1:
+            source = ch1.readlines()
+
+        if request.method == "POST":
+            print(request.form['form1'])
+
+
+        return render_template('challenge1.html', result2= contract.address, result3 = status, source_code=source,token=token_, page=1)
+
+
+    @app.route('/your_challenges/2')
+    def ch2():
+        with open("flaskr/session","r") as session:
+            lines = session.readlines()
+
+        with open("flaskr/challenges/ch2") as king:
+            bycode_abi = king.readlines()
+
+        abi = bycode_abi[1]    
+
+        contract = web3.eth.contract(
+            address = lines[3].strip(),
+            abi = abi
+        )
+
+        status = contract.functions.isof().call()
+        if status == False:
+            status = "not solved"
+            token_ = "Try harder"
+        else:
+            status = "solved"
+            token_ = "0x00001"
+
+        with open("flaskr/sol/ch2","r") as ch2:
+            source = ch2.readlines()
+
+
+
+
+        return render_template('challenge1.html', result2= contract.address, result3 = status, source_code=source,token=token_, page=2)
+
+
+    @app.route('/your_challenges/3')
+    def ch3():
+        with open("flaskr/session","r") as session:
+            lines = session.readlines()
+
+        with open("flaskr/challenges/ch3") as king:
+            bycode_abi = king.readlines()
+
+        abi = bycode_abi[1]    
+
+        contract = web3.eth.contract(
+            address = lines[4].strip(),
+            abi = abi
+        )
+
+        status = contract.functions.locked().call()
+        if status == True:
+            status = "not solved"
+            token_ = "Try harder"
+        else:
+            status = "solved"
+            token_ = "0x00001"
+
+        with open("flaskr/sol/ch3","r") as ch3:
+            source = ch3.readlines()
+
+
+
+
+        return render_template('challenge1.html', result2= contract.address, result3 = status, source_code=source,token=token_, page=3)
+
+
+    @app.route('/your_challenges/4')
+    def ch4():
+        with open("flaskr/session","r") as session:
+            lines = session.readlines()
+
+        with open("flaskr/challenges/ch4") as king:
+            bycode_abi = king.readlines()
+
+        abi = bycode_abi[1]    
+
+        contract = web3.eth.contract(
+            address = lines[5].strip(),
+            abi = abi
+        )
+
+        status = contract.functions.consecutiveWins().call()
+        if status > 5 :
+            status = "solved"
+            token_ = "0x00001"
+        else:
+            status = "not solved"
+            token_ = "Try harder"
+
+        with open("flaskr/sol/ch4","r") as ch1:
+            source = ch1.readlines()
+
+
+
+
+        return render_template('challenge1.html', result2= contract.address, result3 = status, source_code=source,token=token_, page=4)
+
+    @app.route('/your_challenges/5')
+    def ch5():
+        with open("flaskr/session","r") as session:
+            lines = session.readlines()
+
+        with open("flaskr/challenges/ch5") as king:
+            bycode_abi = king.readlines()
+
+        abi = bycode_abi[1]    
+
+        contract = web3.eth.contract(
+            address = lines[6].strip(),
+            abi = abi
+        )
+
+        status = contract.functions.balanceOf(contract.address).call()
+        if status < 100:
+            status = "solved"
+            token_ = "0x00001"
+        else:
+            status = "not solved"
+            token_ = "Try harder"
+
+        with open("flaskr/sol/ch5","r") as ch1:
+            source = ch1.readlines()
+
+
+
+
+        return render_template('challenge1.html', result2= contract.address, result3 = status, source_code=source,token=token_, page=5)
 
     return app
 

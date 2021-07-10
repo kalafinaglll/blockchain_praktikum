@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"> -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta charset = "utf-8">
+
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
+
+        <link href="{{ url_for('static', filename='static/css/coming-sssoon.css') }}" rel="stylesheet" />
+        <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"> -->
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Grand+Hotel' rel='stylesheet' type='text/css'>
+        <!-- <meta charset = "utf-8"> -->
+        <title> Challenge List </title>
+    </head>
+    <body>
+        <div class="main" style="background-image: url('/static/images/geometric-leaves.png')">
+            <div class="columns">
+                <div class="medium-4 row">
+                        <h3> Welcome to Challenge {{ page }}!</h3><br>
+                </div>
+
+                <div class="medium-2 right" style="background-color:#f1f1f1;">
+                    <ul class="side-nav">
+                        <li class="active"><a href="/hall">Home</a></li>
+                        <li><a href="/challenge/start">challenge status</a></li>
+                    </ul>
+                </div>
+                
+                <div class="medium-5 columns">
+                    <h4> Contract Address: {{ result2 }}</h4>
+                    <h4> is solved: {{ result3 }}</h4>
+                    <h4> Source Code:</h4>
+                        {% for source in source_code %}
+                            <pre style="background-color:#f1f1f1;">{{source}}</pre>
+                        {% endfor %}
+                    <h4>your token is :{{token}}</h4>
+                </div>
+
+                <div class="medium-5 columns">
+                    <h4>In this challenge you should give an attack contract to win the game.</h4>
+                    <h4>Input you solidity code in the following box and deploy it!</h4>
+                    <form action="/your_challenges/store" method="post">
+                        <textarea name="text" rows="36" cols="10">input you code...</textarea>
+                        {% if page == 1 %}
+                        <input type="submit" name="submit" value="submit1">
+                        {% elif page == 4 %}
+                        <input type="submit" name="submit" value="submit4">
+                        {% elif page == 5 %}
+                        <input type="submit" name="submit" value="submit5">
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

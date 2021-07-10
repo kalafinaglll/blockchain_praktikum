@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"> -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta charset = "utf-8">
+
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
+
+        <link href="{{ url_for('static', filename='static/css/coming-sssoon.css') }}" rel="stylesheet" /> 
+
+        <title> Bugs Introduction </title>
+
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Grand+Hotel' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="main" style="background-image: url('/static/images/geometric-leaves.png')">
+            <div class="columns">
+                <div class="medium-4 row">
+                    <h3> Welcome to Return value check Bug Tutorial!</h3><br><br>
+                </div>
+                <div class="medium-2 right" style="background-color:#f1f1f1;">
+                    <ul class="side-nav">
+                        <li class="active"><a href="/hall">Home</a></li>
+                        <li><a href="/tutorial">Return to Bugs List</a></li>
+                        {% if page == '1' %}
+                            <li><a href="/tutorial/returncheck_intro/?page=2">Next Step</a></li>
+                        {% elif page == '2'%}
+                            <li><a href="/tutorial/returncheck_intro/?page=3">Next Step</a></li>
+                        {% else %}
+                            <li><a href="/tutorial/returncheck">Next Step</a></li>
+                        {% endif %}
+                        <!-- <li><a href="/tutorial/returncheck">ReturnCheck Bugs</a></li> -->
+                    </ul>
+                </div>
+                <div class="medium-5 columns">
+                    {% if page == '1' %}
+                        <img src="/static/images/UncheckedGame.png" alt="Nothing" />
+                    {% elif page == '2' %}
+                        <img src="/static/images/RevertContract.png" alt="Nothing" />
+                    {% else %}
+                        <img src="/static/images/ReturncheckFlow.png" alt="Nothing" />
+                    {% endif %}
+                </div>
+                <div class="medium-5 columns">
+                    {% if page == '1' %}
+                        <h4>Return value check problem is caused normally by the "Low Level Calls". Because the Error caused by such "Low Level Calls" won't lead to rollback of this call.</h4>
+                        <h4>As you can see in the red box, the "send()" method is a "Low Level Call". Once the calling of this method fails, "false" will be returned and rollback will not happen. That means the following code in withdraw will still be executed. So, even if "send" operation fails (ether is not be transferred to target account), the balance of contract account "RevertContract" in contract "UncheckedGame" still decreases (ether loss).</h4>
+                        <h4>Go 'Next Step' to get more information.</h4>
+                    {% elif page == '2' %}
+                        <h4>There are two places we need to notice, which are marked with red boxes. In the first boxes, this "RevertContract" contract call "withdraw" method from "UncheckedGame" to execute the withdraw operation. There is a fallback function in the second red boxes, which is a revert method. Basically, there are three ways to cause an Error in "Low Level Call"</h4>
+                        <h4>1) Actively revert from code. In our scenario this method is used<br>
+                            2) Gas is not enough<br>
+                            3) The deepth of stack is exceeded.</h4>
+                        <h4>The call of "withdraw" in "RevertContract" happens first. Then the "send" method is executed to finish the transfer operation, which leads the execution of fallback function in "RevertContract". In the fallback function, active revert is executed. That means the operation of "send" fails, so "Low Level Call" returns a false value. However, the whole execution of withdraw is not stop, the rest of code in "withdraw" continues running.</h4>
+                    {% else %}
+                        <h4>Counter measures: <br>
+                            1) Avoid using "Low Level Call()" like "send" to send ether, use 'transfer()' instead.<br> 
+                            2) The check of the return value of any "Low Level Call" should be noticed and react correctly.</h4>
+                        <h4>Then let's go 'Next Step' to a real scenario of return value check to experience it!</h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+pragma solidity ^0.6.0;
+
+contract findmypassword{
+  bool public locked;
+  bytes32 private password;
+
+  constructor() public {
+    locked = true;
+    password = stringToBytes32("xxxxxxxxxx"); //the key that you need to find
+  }
+
+  function unlock(bytes32 _password) public {
+    if (password == _password) {
+      locked = false;
+    }
+  }
+  
+  function stringToBytes32(string memory source) public view
+    returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
+}

